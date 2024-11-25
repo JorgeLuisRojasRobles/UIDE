@@ -1,5 +1,4 @@
 import random
-
 diccionario = ["computadora", "aeropuerto", "ecuador", "programacion", "teclado", "internacional"]
 palabra_secreta = random.choice(diccionario)
 palabra_adivinada = ["_"] * len(palabra_secreta)
