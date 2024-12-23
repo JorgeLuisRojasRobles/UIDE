@@ -1,0 +1,34 @@
+# Juego del Ahorcado en Python
+
+## Objetivo del Programa
+
+El objetivo de este programa es simular el clásico juego del "Ahorcado" en donde un jugador intenta adivinar una palabra secreta, letra por letra, dentro de un número limitado de intentos. El jugador tiene un máximo de 5 intentos incorrectos para adivinar la palabra correcta.
+
+## Descripción del Código
+
+El código está diseñado para seleccionar una palabra aleatoria de un diccionario predefinido y mostrarla al jugador como una serie de guiones bajos (`_`), representando las letras que aún no han sido adivinadas. A medida que el jugador ingresa letras, el programa verifica si la letra está presente en la palabra secreta, actualizando la palabra adivinada y mostrando los intentos restantes. El jugador gana si adivina todas las letras de la palabra antes de agotar los intentos.
+
+### Funcionalidades Principales
+
+1. **Selección aleatoria de palabra**:
+   El programa selecciona una palabra aleatoria de una lista predefinida de palabras (`diccionario`).
+
+2. **Adivinar letra por letra**:
+   El jugador puede ingresar una letra para intentar adivinar parte de la palabra secreta. Si la letra es correcta, se revela en las posiciones correctas de la palabra oculta.
+
+3. **Número limitado de intentos**:
+   El jugador tiene un máximo de 5 intentos incorrectos. Si el jugador alcanza este número sin haber adivinado toda la palabra, pierde el juego.
+
+4. **Interfaz interactiva**:
+   El juego muestra la palabra oculta y los intentos restantes en cada paso, brindando una experiencia interactiva.
+
+5. **Fin del juego**:
+   El juego termina cuando el jugador adivina correctamente la palabra o se queda sin intentos. El resultado se muestra al final, indicando si el jugador ganó o perdió.
+
+### Estructura del Código
+
+El código está organizado en una función principal llamada `juego_ahorcado()`, que contiene todo el flujo del juego. La función se encarga de:
+- Seleccionar la palabra secreta.
+- Mostrar el progreso del jugador (letras adivinadas y número de intentos restantes).
+- Verificar las letras ingresadas por el jugador.
+- Determinar el resultado del juego (ganar o perder).
