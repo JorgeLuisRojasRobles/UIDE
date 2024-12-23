@@ -1,53 +1,165 @@
 import random
+import string
+import getpass
+import pyperclip
 
-# Lista de palabras para el juego
-diccionario = ["computadora", "aeropuerto", "ecuador", "programacion", "teclado", "internacional"]
+usuarios = {}
+contraseñas_generadas = {}
 
-# Selecciona una palabra aleatoria del diccionario
-palabra_secreta = random.choice(diccionario)
+def validar_correo(correo):
+    return '@' in correo and (correo.endswith('.com') or correo.endswith('.COM'))
 
-# Inicializa la palabra adivinada con guiones bajos
-palabra_adivinada = ["_"] * len(palabra_secreta)
+def generar_contraseña(longitud, incluir_mayusculas, incluir_minusculas, incluir_numeros, incluir_caracteres_especiales):
+    caracteres = ""
+    if incluir_mayusculas:
+        caracteres += string.ascii_uppercase
+    if incluir_minusculas:
+        caracteres += string.ascii_lowercase
+    if incluir_numeros:
+        caracteres += string.digits
+    if incluir_caracteres_especiales:
+        caracteres += string.punctuation
 
-# Contador de intentos incorrectos
-intentos_incorrectos = 0
+    if not caracteres:
+        print("Debes seleccionar al menos un tipo de caracteres.")
+        return None
 
-# Número máximo de intentos permitidos
-max_intentos = 5
+    return ''.join(random.choice(caracteres) for _ in range(longitud))
 
-print("BIENVENIDO AL JUEGO DEL AHORCADO")
-
-# Variable para verificar si el jugador ha ganado
-ganaste = False 
-
-# Bucle principal del juego
-while intentos_incorrectos < max_intentos and not ganaste:
-
-    # Muestra la palabra adivinada hasta el momento
-    print("\nPalabra a adivinar:", " ".join(palabra_adivinada))
+def registrar_usuario():
+    print("---- Registro ----")
+    celular = input("Ingresa tu número de celular: ")
     
-    # Solicita al jugador que ingrese una letra
-    letra_ingresada = input("Ingrese una letra: ")
+    while True:
+        correo = input("Ingresa tu correo electrónico: ")
+        if validar_correo(correo):
+            break
+        else:
+            print("Correo inválido. Asegúrate de que contenga '@' y termine en '.com'.")
+
+    contraseña_maestra = getpass.getpass("Ingresa tu contraseña maestra: ")
+
+    usuarios[celular] = {"correo": correo, "contraseña": contraseña_maestra}
+    print("\n¡Registro exitoso!\n")
+
+def recuperar_contraseña_maestra():
+    print("---- Recuperar Contraseña ----")
+    celular = input("Ingresa tu número de celular: ")
+    correo = input("Ingresa tu correo electrónico: ")
     
-    # Verifica si la letra ingresada está en la palabra secreta
-    if letra_ingresada in palabra_secreta:
-        print("Letra correcta")
-        
-        # Actualiza la palabra adivinada con la letra correcta
-        for i in range(len(palabra_secreta)):
-            if palabra_secreta[i] == letra_ingresada:
-                palabra_adivinada[i] = letra_ingresada
+    if celular in usuarios and usuarios[celular]["correo"] == correo:
+        print(f"\nLa contraseña asociada a tu número de celular {celular} es: {usuarios[celular]['contraseña']}")
     else:
-        # Incrementa el contador de intentos incorrectos
-        intentos_incorrectos += 1
-        print("Letra incorrecta. Intentos restantes:", max_intentos - intentos_incorrectos)
+        print("\nNúmero de celular o correo incorrecto.")
 
-    # Verifica si el jugador ha adivinado toda la palabra
-    if "".join(palabra_adivinada) == palabra_secreta:
-        ganaste = True
+def iniciar_sesion():
+    print("---- Iniciar sesión ----")
+    celular = input("Ingresa tu número de celular: ")
+    
+    if celular in usuarios:
+        contraseña = getpass.getpass("Ingresa tu contraseña maestra: ")
+        
+        if usuarios[celular]["contraseña"] == contraseña:
+            print("\n¡Bienvenido a RandomLook!")  
+            menu_usuario(celular)
+        else:
+            print("\nContraseña incorrecta.")
+    else:
+        print("\nNúmero de celular no registrado.")
 
-# Mensaje final del juego
-if ganaste == True:
-    print("\n¡Felicidades, usted ganó el juego!")
-else:
-    print("\nPerdió el juego, la palabra correcta era:", palabra_secreta)
+def menu_usuario(celular):
+    while True:
+        print("\n--- Menú de usuario ---")
+        print("1. Ver perfil")
+        print("2. Generar contraseña segura")
+        print("3. Salir")
+        opcion = input("Selecciona una opción: ")
+        
+        if opcion == "1":
+            print(f"Perfil de {celular} - Correo: {usuarios[celular]['correo']}")
+        elif opcion == "2":
+            sub_menu_contraseñas()
+        elif opcion == "3":
+            print("¡Hasta luego!")
+            break
+        else:
+            print("Opción no válida. Inténtalo de nuevo.")
+
+def sub_menu_contraseñas():
+    while True:
+        print("\n--- Menú de Contraseñas Seguras ---")
+        print("1. Generar nueva contraseña")
+        print("2. Ver contraseñas generadas")
+        print("3. Salir")
+        opcion = input("Selecciona una opción: ")
+        
+        if opcion == "1":
+            generar_y_almacenar_contraseña()
+        elif opcion == "2":
+            ver_contraseñas_generadas()
+        elif opcion == "3":
+            break
+        else:
+            print("Opción no válida. Inténtalo de nuevo.")
+
+def generar_y_almacenar_contraseña():
+    print("---- Generar Nueva Contraseña ----")
+    try:
+        longitud = int(input("Ingresa la longitud de la nueva contraseña: "))
+        if longitud < 6:
+            print("La longitud de la contraseña debe ser al menos 6 caracteres.")
+            return
+    except ValueError:
+        print("Por favor ingresa un número válido para la longitud.")
+        return
+    
+    incluir_mayusculas = input("¿Incluir mayúsculas? (s/n): ").lower() == 's'
+    incluir_minusculas = input("¿Incluir minúsculas? (s/n): ").lower() == 's'
+    incluir_numeros = input("¿Incluir números? (s/n): ").lower() == 's'
+    incluir_caracteres_especiales = input("¿Incluir caracteres especiales? (s/n): ").lower() == 's'
+    
+    destinatario = input("¿Para quién generaste esta contraseña?: ")
+    
+    nueva_contraseña = generar_contraseña(longitud, incluir_mayusculas, incluir_minusculas, incluir_numeros, incluir_caracteres_especiales)
+    
+    if nueva_contraseña:
+        print(f"Contraseña generada para {destinatario}: {nueva_contraseña}")
+        pyperclip.copy(nueva_contraseña) 
+        print("La nueva contraseña ha sido copiada al portapapeles.")
+        
+        almacenar = input("¿Quieres almacenar esta contraseña? (s/n): ").lower() == 's'
+        
+        if almacenar:
+            contraseñas_generadas[destinatario] = nueva_contraseña
+            print(f"La contraseña ha sido almacenada para {destinatario}.")
+
+def ver_contraseñas_generadas():
+    print("\n--- Contraseñas Generadas ---")
+    if contraseñas_generadas:
+        for destinatario, contraseña in contraseñas_generadas.items():
+            print(f"{destinatario}: {contraseña}")
+    else:
+        print("No hay contraseñas generadas almacenadas.")
+
+def menu_principal():
+    while True:
+        print("\n--- Menú Principal ---")
+        print("1. Registrarse")
+        print("2. Iniciar sesión")
+        print("3. Recuperar contraseña")
+        print("4. Salir")
+        opcion = input("Selecciona una opción: ")
+
+        if opcion == "1":
+            registrar_usuario()
+        elif opcion == "2":
+            iniciar_sesion()
+        elif opcion == "3":
+            recuperar_contraseña_maestra()
+        elif opcion == "4":
+            print("¡Hasta luego!")
+            break
+        else:
+            print("Opción no válida. Inténtalo de nuevo.")
+
+menu_principal()
